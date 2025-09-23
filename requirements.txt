@@ -1,0 +1,7 @@
+django
+django-filter
+djangorestframework
+django-cors-headers
+djangorestframework-simplejwt
+django-rest-passwordreset
+rest-framework-roles
