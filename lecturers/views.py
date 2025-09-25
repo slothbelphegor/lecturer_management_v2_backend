@@ -24,29 +24,21 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     pagination_class = CoursePagination
     authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['name', 'code', 'credits']
     search_fields = ['name', 'code', 'credits']
     ordering_fields = ['name', 'code', 'credits']
     
-    # permission_classes = [permissions.AllowAny]
-    # view_permissions = {
-    #     'list': {
-    #         'lecturer': True,
-    #         'potential_lecturer': True,
-    #         'it_faculty': True,
-    #         'education_department': True,
-    #         'supervision_department': True,
+    view_permissions = {
+        'list,all_courses,lecturer_count': {
+            'user': True,
             
-    #     },
-    #     'retrieve,update,create,destroy': {
-    #         'education_department': True,
-    #     },
-    #     'lecturer_count': {
-    #         'user': True,
-    #     }
-    # }
+        },
+        'retrieve,update,create,destroy': {
+            'education_department': True,
+        },
+    }
 
     def list(self, request):
         queryset = Course.objects.all()
@@ -141,11 +133,41 @@ class LecturerViewSet(viewsets.ModelViewSet):
     serializer_class = LecturerSerializer
     pagination_class = LecturerPagination
     authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['name', 'status', 'degree', 'specialization', 'phone_number', 'email', 'address']
     search_fields = ['name', 'status', 'degree', 'specialization', 'phone_number', 'email', 'address']
     ordering_fields = ['name', 'status', 'degree', 'specialization', 'phone_number', 'email', 'address']
+    view_permissions = {
+        'me': {
+            'user': True,
+        },
+        'list': {
+            'lecturer': True,
+            'potential_lecturer': True,
+            'it_faculty': True,
+            'education_department': True,
+            'supervision_department': True,
+        },
+        'retrieve,all_lecturers': {
+            'education_department': True,
+            'it_faculty': True,
+            'supervision_department': True
+        },
+        'create,update,destroy': {
+          'education_department': True  
+        },
+        'potential_lecturers,partial_update,count_potential_lecturers': {
+            'it_faculty': True,
+            'education_department': True,
+        },
+        'sign_contract,count_pending_lecturers': {
+            'education_department': True,
+        },
+        'degree_count,title_count,count_all_lecturers': {
+            'user': True,
+        },
+    }
     
     def list(self, request):
         lecturer_group = Group.objects.filter(name='lecturer').first()
@@ -500,7 +522,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.AllowAny]
+    # permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['class_assigned__name', 'day_of_week', 'start_period', 'location']
     search_fields = ['class_assigned__name', 'day_of_week', 'start_period', 'location']
@@ -520,6 +542,19 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         12: {"start": "18:20", "end": "19:10"},
         13: {"start": "19:30", "end": "20:20"},
         14: {"start": "20:20", "end": "21:10"},
+    }
+    view_permissions = {
+        'list': {
+            'lecturer': True,
+            'potential_lecturer': True,
+            'it_faculty': True,
+            'education_department': True,
+            'supervision_department': True,
+            
+        },
+        'retrieve,update,create,destroy': {
+            'education_department': True,
+        },
     }
     
     
@@ -629,20 +664,20 @@ class EvaluationPagination(PageNumberPagination):
 class EvaluationViewSet(viewsets.ModelViewSet):
     queryset = Evaluation.objects.all()
     serializer_class = EvaluationSerializer
-    permission_classes = [permissions.AllowAny]
-    # view_permissions = {
-    #     'get_by_lecturer': {
-    #         'it_faculty': True,
-    #         'supervision_department': True,
-    #     },
-    #     'retrieve,update,create,destroy': {
-    #         'supervision_department': True,
-    #         'it_faculty': True,
-    #     },
-    #     'me': {
-    #         'user': True
-    #     }
-    # }
+    # permission_classes = [permissions.AllowAny]
+    view_permissions = {
+        'get_by_lecturer': {
+            'it_faculty': True,
+            'supervision_department': True,
+        },
+        'retrieve,update,create,destroy': {
+            'supervision_department': True,
+            'it_faculty': True,
+        },
+        'me': {
+            'user': True
+        }
+    }
 
     def list(self, request):
         queryset = Evaluation.objects.all()
@@ -720,27 +755,27 @@ class LecturerRecommendationViewSet(viewsets.ModelViewSet):
     queryset = LecturerRecommendation.objects.all()
     serializer_class = LecturerRecommendationSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['name', 'workplace', 'recommender__name', 'status', 'date', 'course_names']
     search_fields = ['name', 'workplace', 'recommender__name', 'status', 'date', 'course_names']
     ordering_fields = ['name', 'workplace', 'recommender__name', 'status', 'date', 'course_names']
     
-    # view_permissions = {
-    #     'list': {
-    #         'it_faculty': True
-    #     },
-    #     'retrieve,update': {
-    #         'lecturer': True,
-    #         'it_faculty': True
-    #     },
-    #     'create,destroy,me': {
-    #         'lecturer': True
-    #     },
-    #     'count_unchecked': {
-    #         'it_faculty': True
-    #     }
-    # }
+    view_permissions = {
+        'list': {
+            'it_faculty': True
+        },
+        'retrieve,update': {
+            'lecturer': True,
+            'it_faculty': True
+        },
+        'create,destroy,me': {
+            'lecturer': True
+        },
+        'count_unchecked': {
+            'it_faculty': True
+        }
+    }
     def list(self, request):
         queryset = LecturerRecommendation.objects.all()
         # Apply search filter and ordering
