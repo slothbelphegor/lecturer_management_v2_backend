@@ -544,7 +544,7 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         14: {"start": "20:20", "end": "21:10"},
     }
     view_permissions = {
-        'list': {
+        'list,get_schedules_by_lecturer': {
             'lecturer': True,
             'potential_lecturer': True,
             'it_faculty': True,
@@ -555,6 +555,9 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         'retrieve,update,create,destroy': {
             'education_department': True,
         },
+        'me': {
+            'lecturer': True,
+        }
     }
     
     
@@ -593,6 +596,8 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         # Log lỗi nếu có
         print("Update failed:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
     
     
     def partial_update(self, request, pk=None):
