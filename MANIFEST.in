@@ -1,0 +1,7 @@
+include README.md
+include requirements.txt
+include db.sqlite3
+recursive-include templates *
+recursive-include */templates *
+recursive-include */static *
+recursive-include */migrations *
