@@ -16,7 +16,7 @@ class DocumentPagination(PageNumberPagination):
     page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 100
-    
+
 
 class DocumentFilter(filters.FilterSet):
     name = filters.CharFilter(lookup_expr='icontains')
@@ -29,13 +29,12 @@ class DocumentFilter(filters.FilterSet):
         fields = ['name', 'document_type_name', 'published_by', 'signed_by']
 
 
-
 class DocumentTypeViewSet(viewsets.ModelViewSet):
     queryset = DocumentType.objects.all()
     serializer_class = DocumentTypeSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def list(self, request):
         queryset = DocumentType.objects.all()
         serializer = self.serializer_class(queryset, many=True)
@@ -61,7 +60,8 @@ class DocumentTypeViewSet(viewsets.ModelViewSet):
     def update(self, request, pk=None):
         try:
             document_type = self.queryset.get(pk=pk)
-            serializer = self.serializer_class(document_type, data=request.data)
+            serializer = self.serializer_class(
+                document_type, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
@@ -83,28 +83,29 @@ class DocumentViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentSerializer
     pagination_class = DocumentPagination
     filter_backends = [
-        rest_filters.SearchFilter, 
-        rest_filters.OrderingFilter]
+        rest_filters.SearchFilter,
+        rest_filters.OrderingFilter
+    ]
     filterset_class = DocumentFilter
-    # filterset_fields = ["name", "published_by", "signed_by", "document_type__name"]
-    search_fields = ["name", "published_by", "signed_by", "document_type__name"]
-    ordering_fields = ["name", "published_at", "valid_at", "uploaded_at", "updated_at"]
+    search_fields = ["name", "published_by",
+                     "signed_by", "document_type__name"]
+    ordering_fields = ["name", "published_at",
+                       "valid_at", "uploaded_at", "updated_at"]
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
-    
+
     def list(self, request):
         queryset = Document.objects.all()
-        
+
         # Apply search filter and ordering
         queryset = self.filter_queryset(queryset)
-        
+
         # Add pagination
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.serializer_class(page, many=True)
             return self.get_paginated_response(serializer.data)
-        
-            
+
         # If no pagination, return all results
         serializer = self.serializer_class(queryset, many=True)
         if not serializer.data:

@@ -2,6 +2,7 @@ from django.db import models
 from users.models import CustomUser
 # Create your models here.
 
+
 class Course(models.Model):
     name = models.CharField(max_length=100, unique=True)
     code = models.CharField(max_length=10, unique=True)
@@ -10,6 +11,7 @@ class Course(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Lecturer(models.Model):
     name = models.CharField(max_length=30)
@@ -33,8 +35,8 @@ class Lecturer(models.Model):
     recruited_at = models.DateField(blank=True, null=True)
     years_of_experience = models.IntegerField(blank=True, null=True)
     exp_academic = models.JSONField(blank=True, null=True)
-    exp_language = models.TextField(blank=True, null=True)
-    exp_computer = models.TextField(blank=True, null=True)
+    exp_language = models.TextField(blank=True)
+    exp_computer = models.TextField(blank=True)
     exp_work = models.JSONField(blank=True, null=True)
     researches = models.JSONField(blank=True, null=True)
     published_works = models.JSONField(blank=True, null=True)
@@ -45,14 +47,15 @@ class Lecturer(models.Model):
         null=True,
         blank=True,
     )
-    user = models.OneToOneField(CustomUser, null=True, blank=True, on_delete=models.SET_NULL)
+    user = models.OneToOneField(
+        CustomUser, null=True, blank=True, on_delete=models.SET_NULL)
     status = models.CharField(db_default="Chưa được duyệt", max_length=100)
     date = models.DateField(auto_now_add=True)
-  
+
     def __str__(self):
         return f"{self.name} - {self.workplace}"
-    
-    
+
+
 class Class(models.Model):
     name = models.TextField(
         max_length=100
@@ -67,10 +70,10 @@ class Class(models.Model):
     )
     semester = models.IntegerField()
     year = models.TextField(max_length=10)
-    
+
     def __str__(self):
         return f'{self.name} ({self.course.code} - {self.lecturer.name})'
-    
+
 
 class Schedule(models.Model):
     start_time = models.DateTimeField()
@@ -79,25 +82,26 @@ class Schedule(models.Model):
     lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     place = models.CharField(max_length=200)
-    
+
     def __str__(self):
         return f'{self.course.name} - {self.place}'
-    
+
 
 class LecturerRecommendation(models.Model):
     name = models.CharField(max_length=30)
     email = models.EmailField(max_length=100, blank=True, null=True)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-    workplace = models.CharField(max_length=100, blank=True, null=True)
-    recommender = models.ForeignKey(Lecturer, on_delete=models.CASCADE, related_name='recommended_by')
+    phone_number = models.CharField(max_length=20, blank=True)
+    workplace = models.CharField(max_length=100, blank=True)
+    recommender = models.ForeignKey(
+        Lecturer, on_delete=models.CASCADE, related_name='recommended_by')
     courses = models.ManyToManyField(Course, blank=True)
     status = models.CharField(max_length=100, default="Chưa được duyệt")
     content = models.TextField(max_length=1000)
     date = models.DateField(auto_now_add=True)
-    
+
     def __str__(self):
         return f"{self.name} - {self.workplace}"
-    
+
 
 class Evaluation(models.Model):
     title = models.CharField(max_length=200)
@@ -108,6 +112,3 @@ class Evaluation(models.Model):
 
     def __str__(self):
         return f"{self.lecturer.name} - {self.date}"
-        
-    
-    
