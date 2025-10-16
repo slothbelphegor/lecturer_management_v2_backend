@@ -5,3 +5,6 @@ django-cors-headers
 djangorestframework-simplejwt
 django-rest-passwordreset
 rest-framework-roles
+mysqlclient
+python-dotenv
+cryptography

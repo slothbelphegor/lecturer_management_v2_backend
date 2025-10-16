@@ -19,7 +19,8 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
+.env
+data.json
 docker-compose.yml
 Dockerfile
 .gitignore
