@@ -13,10 +13,17 @@ WORKDIR /app
 # Install required system dependencies
 RUN apt-get update && apt-get install -y \
     sqlite3 \
+    pkg-config \
+    default-libmysqlclient-dev \
+    build-essential \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # copy all the files to the container
 COPY . /app
+
+# Download AWS RDS certificate
+RUN wget https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem -O /app/global-bundle.pem
 
 # install dependencies
 RUN python3 -m ensurepip --upgrade
